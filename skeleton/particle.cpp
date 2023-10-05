@@ -1,11 +1,30 @@
 #include "particle.h"
 
-void particle::update() {
-	pos->p += vel;
+particle::particle(PxTransform pos, Vector3 vel, Vector3 acc, float weight, float damping, Vector4 c, float radius)
+    : p(pos), v(vel), acceleration(acc), mass(weight), damp(damping)
+{
+    rend = new RenderItem();
+    rend->color = c;
+    rend->shape = CreateShape(physx::PxSphereGeometry(radius));
+    rend->transform = &p;
 }
 
-particle::particle(Vector3 initpos) {
-	pos = new PxTransform(Vector3(0, 0, 0));
-	vel = Vector3(0, 0.1, 0);
-	rend = new RenderItem(CreateShape(PxSphereGeometry(5)), pos, Vector4(1, 0, 0, 1));
+particle::~particle()
+{
+    DeregisterRenderItem(rend);
+    delete rend;
 }
+
+void particle::update(double t)
+{
+    integrate(t);
+}
+
+
+void particle::integrate(double t)
+{
+    v += acceleration * t;
+    v *= pow(damp, t);
+    p.p += v * t; 
+}
+
