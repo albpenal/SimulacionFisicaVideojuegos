@@ -6,7 +6,8 @@
 #include "core.hpp"
 #include "RenderUtils.hpp"
 #include "callbacks.hpp"
-#include "Particle.h"
+#include "particle.h"
+#include "ParticleGenerator.h"
 using namespace std;
 
 std::string display_text = "This is a test";
@@ -21,7 +22,9 @@ PxPhysics* gPhysics = NULL;
 PxMaterial* gMaterial = NULL;
 PxPvd* gPvd = NULL;
 
+ParticleGenerator* partGen;
 list<particle*> particles;
+//particle* pt;
 PxDefaultCpuDispatcher* gDispatcher = NULL;
 PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
@@ -41,6 +44,9 @@ void initPhysics(bool interactive)
 
     gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
+    //pt = new particle(PxTransform(Vector3(-20, 20, 10)), Vector3(0, 20.5, 0), Vector3(0, -9.8, 0), 1.0f, 1.0f, Vector4(0.5, 1.0, 0.2, 1), 10.0f);
+    partGen = new ParticleGenerator();
+
     PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
     gDispatcher = PxDefaultCpuDispatcherCreate(2);
@@ -54,15 +60,14 @@ void initPhysics(bool interactive)
 void stepPhysics(bool interactive, double t)
 {
     PX_UNUSED(interactive);
-
+    partGen->update(t);
+    //pt->update(t);
     auto it = particles.begin();
     while (it != particles.end()) {
         auto aux = it;
         ++aux;
-        PxTransform* pos = (*it)->getPos();
-        if (pos->p.y < 20) {
+        if ((*it)->getDestroyed()) {
             delete* it;
-            particles.pop_front();
             particles.erase(it);
         }
         else (*it)->update(t);
@@ -83,6 +88,7 @@ void cleanupPhysics(bool interactive)
     PxPvdTransport* transport = gPvd->getTransport();
     gPvd->release();
     transport->release();
+    //delete pt;
     for (auto& i : particles) delete i;
     particles.clear();
     gFoundation->release();
@@ -95,15 +101,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
     switch (toupper(key))
     {
-    case 'R': // FIREBALL
+    case 'F': // FIREBALL
     {
         Camera* camera = GetCamera();
         double damp = 0.9f;
         float vel = 10.0f;
         Vector4 color = Vector4(1, 0, 0, 1);
-        float r = 0.6f;
-        particle* p = new particle(camera->getTransform(), camera->getDir() * vel, Vector3(0, -0.6, 0), 1.0f, damp, color, r);
-        RegisterRenderItem(p->getRend());
+        float r = 0.1f;
+        particle* p = new particle(camera->getTransform(), camera->getDir() * vel, Vector3 (0,0,0), Vector3(0, -0.6, 0), 1.0f, damp, color, r);
         particles.push_back(p);
         break;
     }
