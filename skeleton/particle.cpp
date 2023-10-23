@@ -40,7 +40,7 @@ void particle::setupCanonball() {
     gravity = Vector3(0, -9.8, 0);
     mass = 1.0f;
     damp = 0.9f;
-    color = Vector4(0.8, 0.8, 0.8, 1);
+    color = Vector4(1, 0, 1, 1);
     radius = 1.0f;
 }
 

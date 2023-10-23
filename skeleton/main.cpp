@@ -112,6 +112,15 @@ void keyPress(unsigned char key, const PxTransform& camera)
         particles.push_back(p);
         break;
     }
+    case '1':
+    {
+        Camera* camera = GetCamera();
+        PxTransform tr = camera->getTransform();
+        tr.p.z -= 10;
+        tr.p.x -= 10;
+        tr.p.y -= 10;
+        partGen->generateFirework(tr, Vector3(0, 8, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, 0.9f, Vector4(0.3, 0.3, 1, 1), 0.8f, 3);
+    }
 
     default:
         break;

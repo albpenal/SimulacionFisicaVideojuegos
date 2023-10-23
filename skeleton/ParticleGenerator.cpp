@@ -9,7 +9,11 @@ ParticleGenerator::~ParticleGenerator() {
 }
 
 void ParticleGenerator::update(float t) {
-    generate();
+   /* cooldown += t;
+    if (cooldown >= 1) {
+        generate();
+        cooldown = 0.0f;
+    }*/
     partSyst->update(t);
 }
 
@@ -60,25 +64,38 @@ void ParticleGenerator::generate() {
     
     //otros parámetros
     Vector4 color;
-    float r = 0.6f; // radius
+    float r = 0.4f; // radius
     double damp = 0.9f; // damping
     Vector3 gravity = Vector3(0, -10, 0);
     Vector3 acceleration = Vector3(0, 0, 0);
     float weight = 1.0f;
 
-    int rndgen = rand() % 2;
+    int rndgen = rand() % 1 + 1;
     if (rndgen == 0) {
         color = Vector4(0, 1, 0, 1);
         particle* p = new particle(pos, vel, acceleration, gravity, weight, damp, color, r);
         partSyst->addParticle(p);
     }
     else {
+        r = 0.8f;
+        vel = Vector3(0, 8, 0);
         gravity = Vector3(0, 0, 0);
-        color = Vector4(0, 0, 1, 1);
-        Firework* f = new Firework(pos, vel, acceleration, gravity, weight, damp, color, r, partSyst);
+        color = Vector4(0.3, 0.3, 1, 1);
+        Firework* f = new Firework(pos, vel, acceleration, gravity, weight, damp, color, r, partSyst, this, 3);
         partSyst->addFirework(f);
     }
     
+}
+
+void ParticleGenerator::generateFirework(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, int gen) {
+    Vector3 r = UniformDistribution(5);
+    Firework* f = new Firework(pos, vel + r, acc, grav, weight, damping, c, radius, partSyst, this, gen);
+    partSyst->addFirework(f);
+}
+
+void ParticleGenerator::generateParticle(PxTransform pos) {
+    particle* p = new particle(pos);
+    partSyst->addParticle(p);
 }
 
 
