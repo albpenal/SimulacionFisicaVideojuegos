@@ -4,15 +4,16 @@ particle::particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, floa
     : p(pos), v(vel), acceleration(acc), gravity(grav), mass(weight), damp(damping)
 {
     rend = new RenderItem();
+    force = Vector3(0, 0, 0);
     rend->color = c;
     rend->shape = CreateShape(physx::PxSphereGeometry(radius));
     rend->transform = &p;
     RegisterRenderItem(rend);
 }
 
-particle::particle(PxTransform pos)
-    : p(pos)
+particle::particle(PxTransform pos) : p(pos)
 {
+    force = Vector3(0, 0, 0);
     int r = rand() % 3;
     if (r == 0) setupCanonball();
     else if (r == 1) setupLaser();
@@ -28,7 +29,7 @@ void particle::setupFireball() {
     v = RandVect(5);
     acceleration = Vector3(0, 0, 0);
     gravity = Vector3(0, 1, 0);
-    mass = 1.0f;
+    mass = 0.1f;
     damp = 0.9f;
     color = Vector4(1, 0, 0, 1);
     radius = 0.6f;
@@ -48,7 +49,7 @@ void particle::setupLaser() {
     v = RandVect(25);
     acceleration = Vector3(0, 0, 0);
     gravity = Vector3(0, -0.2, 0);
-    mass = 1.0f;
+    mass = 0.01f;
     damp = 0.9f;
     color = Vector4(1, 1, 1, 1);
     radius = 0.3f;
@@ -70,14 +71,15 @@ void particle::update(double t)
     //tiempo de vida (si es mayor que 5 segundos se borra)  
     lifetime += t;
     //comprobar si se tiene que borrar
-    if (p.p.y < 20 || lifetime >= 5) dest = true;
+    if (/*p.p.y < -20 ||*/ lifetime >= 5) dest = true;
 }
 
 
 void particle::integrate(double t)
 {
     p.p += v * t;
-    v += (gravity + acceleration) * t;
+    v += (gravity + acceleration + force) * t;
     v *= pow(damp, t);
+    force = Vector3(0, 0, 0);
 }
 

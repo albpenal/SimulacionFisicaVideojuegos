@@ -10,7 +10,7 @@ private:
     Vector4 color;        
     PxTransform p; 
     RenderItem* rend; 
-    Vector3 acceleration, gravity;    
+    Vector3 acceleration, gravity, force;    
     float radius;
     float damp;     
     float mass;
@@ -31,5 +31,8 @@ public:
     void setupLaser();
     RenderItem* getRend() const { return rend; }
     PxTransform* getPos() { return &p; }
+    Vector3 getVel() { return v; }
     bool getDestroyed() { return dest; }
+    void addForce(Vector3 f) { force += f; }
+    float getMass() { return mass; }
 };

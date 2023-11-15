@@ -9,11 +9,11 @@ ParticleGenerator::~ParticleGenerator() {
 }
 
 void ParticleGenerator::update(float t) {
-   /* cooldown += t;
-    if (cooldown >= 1) {
+    cooldown += t;
+    if (cooldown >= 0.01) {
         generate();
         cooldown = 0.0f;
-    }*/
+    }
     partSyst->update(t);
 }
 
@@ -54,8 +54,8 @@ void ParticleGenerator::generate() {
     // posicion con randoms
     Vector3 rPos = UniformDistribution(20);
     //Vector3 rPos = NormalDistribution(0, 5);
-    PxTransform pos = PxTransform(Vector3(camera->getTransform().p.x + rPos.x,
-        camera->getTransform().p.y + rPos.y, camera->getTransform().p.z + rPos.z));
+    PxTransform pos = PxTransform(Vector3(camera->getTransform().p.x - 20 + rPos.x,
+        camera->getTransform().p.y + rPos.y, camera->getTransform().p.z - 20 + rPos.z));
 
     // velocidad con randoms
     Vector3 rVel = UniformDistribution(10);
@@ -66,14 +66,15 @@ void ParticleGenerator::generate() {
     Vector4 color;
     float r = 0.4f; // radius
     double damp = 0.9f; // damping
-    Vector3 gravity = Vector3(0, -10, 0);
+    Vector3 gravity = Vector3(0, 0, 0);
     Vector3 acceleration = Vector3(0, 0, 0);
     float weight = 1.0f;
 
-    int rndgen = rand() % 1 + 1;
+    int rndgen = rand() % 1;
     if (rndgen == 0) {
-        color = Vector4(0, 1, 0, 1);
-        particle* p = new particle(pos, vel, acceleration, gravity, weight, damp, color, r);
+        /*color = Vector4(0, 1, 0, 1);
+        particle* p = new particle(pos, vel, acceleration, gravity, weight, damp, color, r);*/
+        particle* p = new particle(pos);
         partSyst->addParticle(p);
     }
     else {

@@ -14,6 +14,7 @@ public:
 	float RandomNormal(float m, float d);
 	void update(float t);
 	void generate();
+	ParticleSystem* getS() { return partSyst; }
 	void generateParticle(PxTransform pos);
 	void generateFirework(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, int gen);
 
