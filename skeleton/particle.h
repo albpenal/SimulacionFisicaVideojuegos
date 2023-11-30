@@ -18,7 +18,7 @@ private:
     bool dest = false; 
 
 public:
-    particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius);
+    particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, bool box = false);
     particle(PxTransform pos);
     ~particle();
 

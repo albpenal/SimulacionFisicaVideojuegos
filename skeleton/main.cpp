@@ -45,8 +45,12 @@ void initPhysics(bool interactive)
     gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
     //pt = new particle(PxTransform(Vector3(-20, 20, 10)), Vector3(0, 20.5, 0), Vector3(0, -9.8, 0), 1.0f, 1.0f, Vector4(0.5, 1.0, 0.2, 1), 10.0f);
+    
     partGen = new ParticleGenerator();
 
+    
+
+    
     PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
     gDispatcher = PxDefaultCpuDispatcherCreate(2);
@@ -142,10 +146,37 @@ void keyPress(unsigned char key, const PxTransform& camera)
         partGen->getS()->applyExplosion();
         break;
     }
-    case 'M':
+    case 'C':
     {
         partGen->getS()->deleteAllParticles();
+        break;
     }
+    case 'K':
+    {
+        partGen->getS()->changeK(5);
+        break;
+    }
+    case '0':
+    {
+        partGen->getS()->generateSpringDemo(ParticleSystem::NORMAL);
+        break;
+    }
+    case '9':
+    {
+        partGen->getS()->generateSpringDemo(ParticleSystem::STATIC);
+        break;
+    }
+    case '8':
+    {
+        partGen->getS()->generateSpringDemo(ParticleSystem::SLINKY);
+        break;
+    }
+    case '7':
+    {
+        partGen->getS()->generateBuoyancy();
+        break;
+    }
+
     default:
         break;
     }

@@ -1,12 +1,13 @@
 #include "particle.h"
 
-particle::particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius)
+particle::particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, bool box)
     : p(pos), v(vel), acceleration(acc), gravity(grav), mass(weight), damp(damping)
 {
     rend = new RenderItem();
     force = Vector3(0, 0, 0);
     rend->color = c;
-    rend->shape = CreateShape(physx::PxSphereGeometry(radius));
+    if (!box) rend->shape = CreateShape(physx::PxSphereGeometry(radius));
+    else rend->shape = CreateShape(physx::PxBoxGeometry(radius, radius, radius));
     rend->transform = &p;
     RegisterRenderItem(rend);
 }
@@ -71,15 +72,15 @@ void particle::update(double t)
     //tiempo de vida (si es mayor que 5 segundos se borra)  
     lifetime += t;
     //comprobar si se tiene que borrar
-    if (/*p.p.y < -20 ||*/ lifetime >= 5) dest = true;
+    //if (/*p.p.y < -20 ||*/ lifetime >= 5) dest = true;
 }
 
 
 void particle::integrate(double t)
 {
     p.p += v * t;
-    v += (gravity + acceleration + force) * t;
+    v += (force/mass) * t;
     v *= pow(damp, t);
-    force = Vector3(0, 0, 0);
+    force *= 0.0;
 }
 

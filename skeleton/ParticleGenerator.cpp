@@ -9,11 +9,11 @@ ParticleGenerator::~ParticleGenerator() {
 }
 
 void ParticleGenerator::update(float t) {
-    cooldown += t;
+    /*cooldown += t;
     if (cooldown >= 0.01) {
         generate();
         cooldown = 0.0f;
-    }
+    }*/
     partSyst->update(t);
 }
 
