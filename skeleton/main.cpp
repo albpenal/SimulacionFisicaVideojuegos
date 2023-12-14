@@ -29,6 +29,7 @@ PxDefaultCpuDispatcher* gDispatcher = NULL;
 PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
 
+
 // Inicializar el motor de física
 void initPhysics(bool interactive)
 {
@@ -46,11 +47,7 @@ void initPhysics(bool interactive)
 
     //pt = new particle(PxTransform(Vector3(-20, 20, 10)), Vector3(0, 20.5, 0), Vector3(0, -9.8, 0), 1.0f, 1.0f, Vector4(0.5, 1.0, 0.2, 1), 10.0f);
     
-    partGen = new ParticleGenerator();
 
-    
-
-    
     PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
     gDispatcher = PxDefaultCpuDispatcherCreate(2);
@@ -58,6 +55,14 @@ void initPhysics(bool interactive)
     sceneDesc.filterShader = contactReportFilterShader;
     sceneDesc.simulationEventCallback = &gContactReportCallback;
     gScene = gPhysics->createScene(sceneDesc);
+
+    PxRigidStatic* suelo = gPhysics->createRigidStatic(PxTransform{ 0,0,0 });
+    PxShape* shape = CreateShape(PxBoxGeometry(100, 1, 100));
+    suelo->attachShape(*shape);
+    gScene->addActor(*suelo);
+    RenderItem* item = new RenderItem(shape, suelo, { 1,0.7,0.7,1 });
+
+    partGen = new ParticleGenerator(gScene, gPhysics);
 }
 
 // Función para configurar lo que sucede en cada paso de la física
@@ -126,24 +131,26 @@ void keyPress(unsigned char key, const PxTransform& camera)
         partGen->generateFirework(tr, Vector3(0, 8, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, 0.9f, Vector4(0.3, 0.3, 1, 1), 0.8f, 3);
         break;
     }
-    case '1':
+    case '1': //gravedad
     {
         partGen->getS()->applyGravity(Vector3(0, -9.8, 0));
+        partGen->getRB()->applyGravity(Vector3(0, 10, 0));
         break;
     }
-    case '2':
+    case '2': //explosion 
     {
-        partGen->getS()->applyWind(Vector3(-8, 0, -7));
+        partGen->getS()->applyExplosion();
+        partGen->getRB()->applyExplosion();
         break;
     }
-    case '3':
+    case '3': //vortice
     {
         partGen->getS()->applyVortex(Vector3(-10, 0, 0));
         break;
     }
-    case '4':
+    case '4': // viento
     {
-        partGen->getS()->applyExplosion();
+        partGen->getS()->applyWind(Vector3(-8, 0, -7));
         break;
     }
     case 'C':
@@ -176,7 +183,16 @@ void keyPress(unsigned char key, const PxTransform& camera)
         partGen->getS()->generateBuoyancy();
         break;
     }
-
+    case 'B': // cubos RIGIDBODY
+    {
+        partGen->getRB()->createGenerators(true);
+        break;
+    }
+    case 'V': // esferas RIGIDBODY
+    {
+        partGen->getRB()->createGenerators(false);
+        break;
+    }
     default:
         break;
     }

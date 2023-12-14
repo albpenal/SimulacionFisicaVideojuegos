@@ -8,7 +8,7 @@ public:
     ExplosionForceGenerator(const float k, const float r, const float t) : intensity(k), radius(r), timeConstant(t) {}
 
     virtual void updateForce(particle* particle, double t);
-
+    virtual void updateForce(RigidBody* rb, double t);
 protected:
     float intensity; // Intensity of the explosion
     float timeConstant; // Time constant for the force application

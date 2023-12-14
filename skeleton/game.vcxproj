@@ -263,9 +263,12 @@
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="RBSystem.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Render.cpp" />
+    <ClCompile Include="RigidBodyForceRegistry.cpp" />
+    <ClCompile Include="RigidBodyGenerator.cpp" />
     <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="VortexForceGenerator.cpp" />
     <ClCompile Include="WindForceGenerator.cpp" />
@@ -284,9 +287,13 @@
     <ClInclude Include="ParticleForceRegistry.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="RBSystem.h" />
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Render.h" />
+    <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="RigidBodyForceRegistry.h" />
+    <ClInclude Include="RigidBodyGenerator.h" />
     <ClInclude Include="SpringForceGenerator.h" />
     <ClInclude Include="VortexForceGenerator.h" />
     <ClInclude Include="WindForceGenerator.h" />

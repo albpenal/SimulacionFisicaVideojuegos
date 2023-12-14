@@ -11,5 +11,6 @@ protected:
 public:
     GravityForceGenerator(const Vector3& g) :_gravity(g) {}
     virtual void updateForce(particle* particle, double t);
+    virtual void updateForce(RigidBody* rb, double t);
 };
 

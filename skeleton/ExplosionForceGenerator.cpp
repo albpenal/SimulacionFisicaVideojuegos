@@ -34,6 +34,24 @@ void ExplosionForceGenerator::updateForce(particle* p, double t) {
     }
 }
 
+void ExplosionForceGenerator::updateForce(RigidBody* p, double t) {
+    Camera* camera = GetCamera();
+    Vector3 explosionCenter = Vector3(camera->getTransform().p.x - 20, camera->getTransform().p.y, camera->getTransform().p.z - 20);
+    Vector3 particlePosition = p->getPosition();
+
+    float distance = calculateDistance(explosionCenter, particlePosition);
+    if (distance <= radius) {
+        Vector3 direction = (particlePosition - explosionCenter).getNormalized();
+        // Rotate the direction vector over time
+        direction = rotateDirection(direction, t);
+
+        float forceIncreaseFactor = 1.0f + t * t;
+        float forceMagnitude = intensity * forceIncreaseFactor / (distance * distance + 1);
+        Vector3 burstForce = direction * forceMagnitude;
+        p->addForce(burstForce);
+    }
+}
+
 float ExplosionForceGenerator::calculateDistance(Vector3 center, Vector3 position) {
     return sqrtf(pow(position.x - center.x, 2) + pow(position.y - center.y, 2) + pow(position.z - center.z, 2));
 }

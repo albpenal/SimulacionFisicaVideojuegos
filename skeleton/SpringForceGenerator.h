@@ -13,7 +13,6 @@ public:
 		_k(k), _resting_length(resting_length), _other(other){}
 
 	virtual void updateForce(particle* particle, double t);
-
 	inline void setK(double k) { _k = k; }
 
 	~SpringForceGenerator() {};

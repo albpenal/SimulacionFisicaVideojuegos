@@ -1,7 +1,8 @@
 #include "ParticleGenerator.h"
 
-ParticleGenerator::ParticleGenerator() {
+ParticleGenerator::ParticleGenerator(PxScene* scene, PxPhysics* gPhysics) {
     partSyst = new ParticleSystem();
+    rbSys = new RBSystem(scene, gPhysics);
 }
 
 ParticleGenerator::~ParticleGenerator() {
@@ -15,6 +16,7 @@ void ParticleGenerator::update(float t) {
         cooldown = 0.0f;
     }*/
     partSyst->update(t);
+    rbSys->update(t);
 }
 
 Vector3 ParticleGenerator::UniformDistribution(int size) {
