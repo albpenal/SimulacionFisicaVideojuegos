@@ -7,6 +7,8 @@ RBSystem::RBSystem(PxScene* scenes, PxPhysics* gPhysics) {
 	numRB = 0;
 	forceRegistry = RigidBodyForceRegistry();
 	camera = GetCamera();
+	RBS = new RBShoot(scene, physics, camera->getTransform().p);
+	ptG = new PlatosGenerator(scene, physics, camera->getTransform().p);
 }
 
 void RBSystem::update(double t) {
@@ -16,6 +18,8 @@ void RBSystem::update(double t) {
 		g->update(t);
 	}
 	
+	RBS->update(t);
+	ptG->update(t);
 	forceRegistry.updateForces(t); // Actualiza las fuerzas ejercidas sobre los RB
 
 	for (RigidBody* rb : rbs) { // RB
@@ -36,6 +40,8 @@ void RBSystem::deleteUnusedRB() {
 	}
 }
 
+
+
 void RBSystem::addRBS(list<RigidBody*> lrb) {
 	for (RigidBody* r : lrb) {
 		if (rbs.size() < MAXRBS) {
@@ -47,6 +53,18 @@ void RBSystem::addRBS(list<RigidBody*> lrb) {
 		else {
 			delete r;
 		}
+	}
+}
+
+void RBSystem::addRBS(RigidBody* rb) {
+	if (rbs.size() < MAXRBS) {
+		rbs.push_back(rb);
+		numRB++;
+		for (auto fg : forceGenerators) // Añade las particulas al registro de fuerzas 
+			forceRegistry.addRegistry(fg, rb);
+	}
+	else {
+		delete rb;
 	}
 }
 

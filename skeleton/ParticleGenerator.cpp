@@ -1,22 +1,77 @@
 #include "ParticleGenerator.h"
 
-ParticleGenerator::ParticleGenerator(PxScene* scene, PxPhysics* gPhysics) {
+ParticleGenerator::ParticleGenerator(PxScene* sc, PxPhysics* gPh) {
     partSyst = new ParticleSystem();
-    rbSys = new RBSystem(scene, gPhysics);
+    rbSys = new RBSystem(sc, gPh);
+    scene = sc;
+    gPhysics = gPh;
 }
 
 ParticleGenerator::~ParticleGenerator() {
 
 }
 
+void ParticleGenerator::initScene() {
+    //abajo
+    PxRigidStatic* suelo = gPhysics->createRigidStatic(PxTransform{ 50,-30,0 });
+    PxShape* shape = CreateShape(PxBoxGeometry(100, 1, 100));
+    suelo->setName("SUELO");
+    suelo->attachShape(*shape);
+    scene->addActor(*suelo);
+    RenderItem* item = new RenderItem(shape, suelo, { 1,0.7,0.7,1 });
+
+    //arriba
+    suelo = gPhysics->createRigidStatic(PxTransform{ 50,130,0 });
+    suelo->setName("SUELO");
+    shape = CreateShape(PxBoxGeometry(100, 1, 100));
+    suelo->attachShape(*shape);
+    scene->addActor(*suelo);
+    item = new RenderItem(shape, suelo, { 1,0.7,0.7,1 });
+
+    //izquierda
+    suelo = gPhysics->createRigidStatic(PxTransform{ -30,70,0 });
+    suelo->setName("SUELO");
+    shape = CreateShape(PxBoxGeometry(1, 100, 100));
+    suelo->attachShape(*shape);
+    scene->addActor(*suelo);
+    item = new RenderItem(shape, suelo, { 1,0.5,0.5,1 });
+
+    //derecha
+    suelo = gPhysics->createRigidStatic(PxTransform{ 130,70,0 });
+    suelo->setName("SUELO");
+    shape = CreateShape(PxBoxGeometry(1, 100, 100));
+    suelo->attachShape(*shape);
+    scene->addActor(*suelo);
+    item = new RenderItem(shape, suelo, { 1,0.5,0.5,1 });
+}
+
 void ParticleGenerator::update(float t) {
-    /*cooldown += t;
-    if (cooldown >= 0.01) {
-        generate();
-        cooldown = 0.0f;
-    }*/
     partSyst->update(t);
     rbSys->update(t);
+    cooldown -= t;
+    if (game == 0 && cooldown <= 0) {
+        generateFirework({ 50,10,-50 }, { 0, 20, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, 1.0f, 0.9f, 
+            Vector4(rand() % 5 * 0.1f + 0.5, rand() % 5 * 0.1f + 0.5, rand() % 5 * 0.1f + 0.5, rand() % 3 * 0.1f + 0.7), 0.8f, 3);
+        cooldown = 2.5f;
+    }
+    if (game == 1) {
+        if (getRB()->GetPlatos()->generate()) {
+            RigidBody* rigido = getRB()->GetPlatos()->getRB();
+            getRB()->addRBS(rigido);
+            Vector3 force;
+            if (rigido->getShape() == s_sphere) {
+                if (rigido->getPosition().y < 50.0f) force = Vector3(0, 10, 0);
+                else force = Vector3(0, -10, 0);
+                getRB()->applyGravityToPlate(force, rigido);
+            }
+            else {
+                if (rigido->getPosition().x < 50.0f) force = Vector3(500, 0, 0);
+                else force = Vector3(-500, 0, 0);
+                getRB()->applyWindToPlate(force, rigido);
+            }
+        }
+    }
+        
 }
 
 Vector3 ParticleGenerator::UniformDistribution(int size) {

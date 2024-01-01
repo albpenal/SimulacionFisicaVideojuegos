@@ -47,8 +47,11 @@
 #endif
 #include <string>
 
-extern std::string display_text;
-
+extern std::string start;
+extern std::string howtoplay;
+extern int game;
+extern int gameScore;
+extern float gameTime;
 namespace Snippets
 {
 void setupDefaultWindow(const char* name);

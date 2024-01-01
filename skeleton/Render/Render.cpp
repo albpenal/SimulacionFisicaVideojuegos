@@ -287,9 +287,22 @@ void startRender(const PxVec3& cameraEye, const PxVec3& cameraDir, PxReal clipNe
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Display text
-	glColor4f(1.0f, 0.2f, 0.2f, 1.0f);
-	drawText(display_text, 0, 0);
-
+	if (game == 0) {
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		drawText(start, 5, 5);
+	}
+	if (game == 1) {
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		drawText(howtoplay, 5, 5);
+		drawText("TIME: " + std::to_string(lrint(gameTime)), 5, 495);
+	}
+	if (game == 2) {
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		drawText("SCORE: " + std::to_string(gameScore), 210, 250);
+	}
+		
+	/*glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	drawText("Time: " + std::to_string((float)((gameTime - inGameTime) + 1)), 30, glutGet(GLUT_WINDOW_HEIGHT) - 30, GLUT_BITMAP_TIMES_ROMAN_24);*/
 	// Setup camera
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();

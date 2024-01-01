@@ -10,24 +10,27 @@
 #include "ParticleGenerator.h"
 using namespace std;
 
-std::string display_text = "This is a test";
-
+std::string start = "PRESS 'ENTER' TO PLAY";
+std::string howtoplay = "AIM AND SHOOT THE SHAPES WITH THE LEFT CLICK";
+int game = 0;
+float gameTime = 20.0f;
+int gameScore = 0;
 using namespace physx;
 
 // Instancias globales de PhysX
+const float WIN = 512.0f;
 PxDefaultAllocator		gAllocator;
 PxDefaultErrorCallback	gErrorCallback;
 PxFoundation* gFoundation = NULL;
 PxPhysics* gPhysics = NULL;
 PxMaterial* gMaterial = NULL;
 PxPvd* gPvd = NULL;
-
 ParticleGenerator* partGen;
-list<particle*> particles;
 //particle* pt;
 PxDefaultCpuDispatcher* gDispatcher = NULL;
 PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
+
 
 
 // Inicializar el motor de física
@@ -49,18 +52,12 @@ void initPhysics(bool interactive)
     
 
     PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-    sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
+    sceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
     gDispatcher = PxDefaultCpuDispatcherCreate(2);
     sceneDesc.cpuDispatcher = gDispatcher;
     sceneDesc.filterShader = contactReportFilterShader;
     sceneDesc.simulationEventCallback = &gContactReportCallback;
     gScene = gPhysics->createScene(sceneDesc);
-
-    PxRigidStatic* suelo = gPhysics->createRigidStatic(PxTransform{ 0,0,0 });
-    PxShape* shape = CreateShape(PxBoxGeometry(100, 1, 100));
-    suelo->attachShape(*shape);
-    gScene->addActor(*suelo);
-    RenderItem* item = new RenderItem(shape, suelo, { 1,0.7,0.7,1 });
 
     partGen = new ParticleGenerator(gScene, gPhysics);
 }
@@ -70,20 +67,13 @@ void stepPhysics(bool interactive, double t)
 {
     PX_UNUSED(interactive);
     partGen->update(t);
-    //pt->update(t);
-    auto it = particles.begin();
-    while (it != particles.end()) {
-        auto aux = it;
-        ++aux;
-        if ((*it)->getDestroyed()) {
-            delete* it;
-            particles.erase(it);
-        }
-        else (*it)->update(t);
-        it = aux;
-    }
     gScene->simulate(t);
     gScene->fetchResults(true);
+    if (game == 1) gameTime -= t;
+    if (gameTime <= 0 && game != 2) {
+        partGen->setGameState(2);
+    }
+        
 }
 
 // Función para limpiar datos
@@ -97,10 +87,17 @@ void cleanupPhysics(bool interactive)
     PxPvdTransport* transport = gPvd->getTransport();
     gPvd->release();
     transport->release();
-    //delete pt;
-    for (auto& i : particles) delete i;
-    particles.clear();
     gFoundation->release();
+    delete partGen;
+}
+
+void mousePress(int button, int state, int x, int y) {
+    if (partGen->getGameState() == 1 && button == 0 && state == 0) {
+        Camera* camera = GetCamera();
+        Vector3 dire = Vector3((min(WIN, x) - WIN / 2) / WIN, -((min(WIN, y) - WIN / 2) / WIN), -1).getNormalized();
+        float vel = 100.0f;
+        if(partGen->getRB()->GetRBShoot()->Shoot(dire * vel)) partGen->getRB()->addRBS(partGen->getRB()->GetRBShoot()->getRB());
+    }
 }
 
 // Función llamada cuando se presiona una tecla
@@ -110,87 +107,9 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
     switch (toupper(key))
     {
-    case 'F': // FIREBALL
+    case '\r':
     {
-        Camera* camera = GetCamera();
-        double damp = 0.9f;
-        float vel = 10.0f;
-        Vector4 color = Vector4(1, 0, 0, 1);
-        float r = 0.1f;
-        particle* p = new particle(camera->getTransform(), camera->getDir() * vel, Vector3 (0,0,0), Vector3(0, -0.6, 0), 1.0f, damp, color, r);
-        particles.push_back(p);
-        break;
-    }
-    case 'Z':
-    {
-        Camera* camera = GetCamera();
-        PxTransform tr = camera->getTransform();
-        tr.p.z -= 10;
-        tr.p.x -= 10;
-        tr.p.y -= 10;
-        partGen->generateFirework(tr, Vector3(0, 8, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, 0.9f, Vector4(0.3, 0.3, 1, 1), 0.8f, 3);
-        break;
-    }
-    case '1': //gravedad
-    {
-        partGen->getS()->applyGravity(Vector3(0, -9.8, 0));
-        partGen->getRB()->applyGravity(Vector3(0, 10, 0));
-        break;
-    }
-    case '2': //explosion 
-    {
-        partGen->getS()->applyExplosion();
-        partGen->getRB()->applyExplosion();
-        break;
-    }
-    case '3': //vortice
-    {
-        partGen->getS()->applyVortex(Vector3(-10, 0, 0));
-        break;
-    }
-    case '4': // viento
-    {
-        partGen->getS()->applyWind(Vector3(-8, 0, -7));
-        break;
-    }
-    case 'C':
-    {
-        partGen->getS()->deleteAllParticles();
-        break;
-    }
-    case 'K':
-    {
-        partGen->getS()->changeK(5);
-        break;
-    }
-    case '0':
-    {
-        partGen->getS()->generateSpringDemo(ParticleSystem::NORMAL);
-        break;
-    }
-    case '9':
-    {
-        partGen->getS()->generateSpringDemo(ParticleSystem::STATIC);
-        break;
-    }
-    case '8':
-    {
-        partGen->getS()->generateSpringDemo(ParticleSystem::SLINKY);
-        break;
-    }
-    case '7':
-    {
-        partGen->getS()->generateBuoyancy();
-        break;
-    }
-    case 'B': // cubos RIGIDBODY
-    {
-        partGen->getRB()->createGenerators(true);
-        break;
-    }
-    case 'V': // esferas RIGIDBODY
-    {
-        partGen->getRB()->createGenerators(false);
+        partGen->setGameState(1);
         break;
     }
     default:
@@ -202,7 +121,28 @@ void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 {
     PX_UNUSED(actor1);
     PX_UNUSED(actor2);
+
+    // Platos contra paredeso suelos
+    if ((actor1->getName() == "PLATO" && actor2->getName() == "SUELO")) {
+        RigidBody* rb = static_cast<RigidBody*>(actor1->userData);
+        rb->setAlive(false);
+    }
+    else if ((actor2->getName() == "PLATO" && actor1->getName() == "SUELO")) {
+        RigidBody* rb = static_cast<RigidBody*>(actor2->userData);
+        rb->setAlive(false);
+    }
+
+    // Bala contra plato
+    else if ((actor2->getName() == "PLATO" && actor1->getName() == "BALA")) {
+        RigidBody* rb = static_cast<RigidBody*>(actor2->userData);
+        RigidBody* rb2 = static_cast<RigidBody*>(actor1->userData);
+        if(rb->getScore() > 0) gameScore += rb->getScore();
+        rb->resetScore();
+        rb->setAlive(false);
+        rb2->setAlive(false);
+    }
 }
+
 
 int main(int, const char* const*)
 {

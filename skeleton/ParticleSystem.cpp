@@ -96,6 +96,11 @@ void ParticleSystem::deleteAllParticles() {
 
     // Clear the list after deleting all particles
     particles.clear();
+
+    for (auto& fire : fireworks) {
+        delete fire;
+    }
+    fireworks.clear();
 }
 
 void ParticleSystem::generateSpringDemo(SPRING type) {
@@ -105,9 +110,9 @@ void ParticleSystem::generateSpringDemo(SPRING type) {
     {
     case ParticleSystem::NORMAL: {
 
-        particle* p1 = new particle(PxTransform(10, 30, 20), null, null, null, 2, 0.9, Vector4(0.9, 0.6, 0.6, 1), 0.6);
+        particle* p1 = new particle({40, 50, -350}, null, null, null, 2, 0.9, Vector4(0.2, 0.8, 0.9, 1), 1, true, false);
         addParticle(p1);
-        particle* p2 = new particle(PxTransform(20, 30, 10), null, null, null, 2, 0.9, Vector4(0.6, 0.6, 0.9, 1), 0.6);
+        particle* p2 = new particle(PxTransform(60, 50, -350), null, null, null, 2, 0.9, Vector4(0.2, 0.8, 0.9, 1), 1, true, false);
         addParticle(p2);
 
         //ultimo booleano true = goma elastica, false = muelle

@@ -1,7 +1,7 @@
 #include "particle.h"
 
-particle::particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, bool box)
-    : p(pos), v(vel), acceleration(acc), gravity(grav), mass(weight), damp(damping)
+particle::particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, bool box, bool lF)
+    : p(pos), v(vel), acceleration(acc), gravity(grav), mass(weight), damp(damping), lF(lF)
 {
     rend = new RenderItem();
     force = Vector3(0, 0, 0);
@@ -32,7 +32,7 @@ void particle::setupFireball() {
     gravity = Vector3(0, 1, 0);
     mass = 0.1f;
     damp = 0.9f;
-    color = Vector4(1, 0, 0, 1);
+    color = Vector4(1, 1, 0.5, 1);
     radius = 0.6f;
 }
 
@@ -42,7 +42,7 @@ void particle::setupCanonball() {
     gravity = Vector3(0, -9.8, 0);
     mass = 1.0f;
     damp = 0.9f;
-    color = Vector4(1, 0, 1, 1);
+    color = Vector4(1, 1, 0.2, 1);
     radius = 1.0f;
 }
 
@@ -52,7 +52,7 @@ void particle::setupLaser() {
     gravity = Vector3(0, -0.2, 0);
     mass = 0.01f;
     damp = 0.9f;
-    color = Vector4(1, 1, 1, 1);
+    color = Vector4(1, 1, 0.8, 1);
     radius = 0.3f;
 }
 
@@ -69,10 +69,13 @@ particle::~particle()
 void particle::update(double t)
 {
     integrate(t);
-    //tiempo de vida (si es mayor que 5 segundos se borra)  
-    lifetime += t;
-    //comprobar si se tiene que borrar
-    //if (/*p.p.y < -20 ||*/ lifetime >= 5) dest = true;
+    if (lF) {
+        //tiempo de vida (si es mayor que 5 segundos se borra)  
+        lifetime += t;
+        //comprobar si se tiene que borrar
+        if (lifetime >= 5) dest = true;
+    }
+    
 }
 
 

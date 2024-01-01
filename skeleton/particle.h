@@ -16,9 +16,10 @@ private:
     float mass;
     float lifetime = 0.0f;
     bool dest = false; 
+    bool lF; 
 
 public:
-    particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, bool box = false);
+    particle(PxTransform pos, Vector3 vel, Vector3 acc, Vector3 grav, float weight, float damping, Vector4 c, float radius, bool box = false, bool lF = true);
     particle(PxTransform pos);
     ~particle();
 

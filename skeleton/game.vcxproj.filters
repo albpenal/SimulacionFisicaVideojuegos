@@ -24,6 +24,8 @@
     <ClCompile Include="RBSystem.cpp" />
     <ClCompile Include="RigidBodyForceRegistry.cpp" />
     <ClCompile Include="RigidBodyGenerator.cpp" />
+    <ClCompile Include="RBShoot.cpp" />
+    <ClCompile Include="PlatosGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -53,6 +55,8 @@
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="RigidBodyForceRegistry.h" />
     <ClInclude Include="RigidBodyGenerator.h" />
+    <ClInclude Include="RBShoot.h" />
+    <ClInclude Include="PlatosGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

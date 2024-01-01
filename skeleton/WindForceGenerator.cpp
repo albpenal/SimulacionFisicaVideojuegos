@@ -7,3 +7,9 @@ void WindForceGenerator::updateForce(particle* particle, double t) {
     Vector3 windForce = _k1 * (wind - v); // Simplificada a solo fuerza lineal
     particle->addForce(windForce);
 }
+
+void WindForceGenerator::updateForce(RigidBody* rb, double t) {
+    Vector3 v = rb->getLinearVelocity();
+    Vector3 windForce = _k1 * (wind - v); // Simplificada a solo fuerza lineal
+    rb->addForce(windForce);
+}

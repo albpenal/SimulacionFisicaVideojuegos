@@ -263,6 +263,8 @@
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="PlatosGenerator.cpp" />
+    <ClCompile Include="RBShoot.cpp" />
     <ClCompile Include="RBSystem.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
@@ -287,6 +289,8 @@
     <ClInclude Include="ParticleForceRegistry.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="PlatosGenerator.h" />
+    <ClInclude Include="RBShoot.h" />
     <ClInclude Include="RBSystem.h" />
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />

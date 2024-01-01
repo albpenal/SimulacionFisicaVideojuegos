@@ -5,7 +5,7 @@
 #include "PxShape.h"
 #include <PxPhysicsAPI.h>
 #include <PxPhysics.h>
-
+#include <string>
 using namespace physx;
 
 enum Shape{s_cube, s_sphere};
@@ -20,16 +20,19 @@ protected:
 	Shape shapeType;
 	float lifeTime;
 	bool alive;
+	int scoretoAdd;
 
 public:
 	RigidBody(PxScene* scene, PxPhysics* physics,
 		const Vector3& Position, const Vector3& Velocity = Vector3(0, 0, 0), const Vector3& Inertia = Vector3(0, 0, 0),
 		double Mass = 1, double LifeTime = 30,
-		Shape Shape = s_cube, Vector4 Color = Vector4(0, 0, 0, 1)) {
+		Shape Shape = s_cube, Vector4 Color = Vector4(0, 0, 0, 1), const char* name = "NONE", float size = 1, int score = 0) {
 
+		scoretoAdd = score;
 		transform = physx::PxTransform(Position.x, Position.y, Position.z);
 		solid = physics->createRigidDynamic(transform);
-
+		solid->setName(name);
+		solid->userData = this;
 		solid->setLinearVelocity(Velocity);
 		solid->setAngularVelocity(Vector3(0,0,0));
 		solid->setLinearDamping(0.0);
@@ -44,10 +47,10 @@ public:
 		switch (shapeType)
 		{
 		case s_sphere:
-			shape = CreateShape(PxSphereGeometry(1));
+			shape = CreateShape(PxSphereGeometry(size));
 			break;
 		case s_cube:
-			shape = CreateShape(PxBoxGeometry(1, 1, 1));
+			shape = CreateShape(PxBoxGeometry(size, size, size));
 			break;
 		}
 
@@ -69,6 +72,7 @@ public:
 
 	PxRigidDynamic* getRigidDynamic() { return solid; }
 	Vector3 getPosition() { return solid->getGlobalPose().p; }
+	PxTransform getTransform() { return solid->getGlobalPose(); }
 	Vector3 getLinearVelocity() { return solid->getLinearVelocity(); }
 	float getMass() { return solid->getMass(); }
 	float getInvMass() { return solid->getInvMass(); }
@@ -76,7 +80,8 @@ public:
 	bool isAlive() { return alive; }
 	Vector4 getColor() { return render->color; }
 	Shape getShape() { return shapeType; }
-
+	int getScore() { return scoretoAdd; }
+	void resetScore() { scoretoAdd = 0; }
 	void setPosition(Vector3 Pos) {
 		transform = PxTransform(Pos);
 		solid->setGlobalPose(transform);
